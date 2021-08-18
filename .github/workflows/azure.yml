@@ -106,7 +106,6 @@ jobs:
             --wait \
             --namespace staging \
             demo-webapp-prd \
-            ./kubernetes/webapp \
             --set image.repository=${{ env.SECRET }}
 
 
