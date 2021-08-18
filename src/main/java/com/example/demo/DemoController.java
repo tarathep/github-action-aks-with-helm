@@ -8,6 +8,6 @@ public class DemoController{
 
     @GetMapping("/hello")
 	public String Hello(){
-		return "Hello Demo Github Action 2";
+		return "Hello Demo Github Action 3";
 	}
 }
