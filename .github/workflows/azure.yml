@@ -1,9 +1,9 @@
-name: Build and deploy JAVA App to AKS
+name: Build and deploy to AKS with Helm
 
 on:
   push:
     branches:
-      - dev-aks
+      - main
   workflow_dispatch:
 
 env:
@@ -11,10 +11,67 @@ env:
   CLUSTER_NAME: aks-demo-webapp
   CLUSTER_RESOURCE_GROUP: rg-github-action-001
   NAMESPACE: demo-webapp-prd
-  SECRET: secret-docker-image
+  SECRET: secret-acr
   APP_NAME: webapp
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build Artifact
+    # needs: unittest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: main
+
+    - name: Set up Java version
+      uses: actions/setup-java@v1
+      with:
+        java-version: '11'
+
+    - name: Build with Maven
+      run: mvn clean install
+
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifact
+        path: '${{ github.workspace }}/target/*.jar'
+
+  push:
+    runs-on: ubuntu-latest
+    name: Build & Push Image to ACR
+    needs: build
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: main
+
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: artifact
+        path: '${{ github.workspace }}/target'
+    
+    - name: Display structure of downloaded files
+      run: ls -R
+      working-directory: '${{ github.workspace }}/target'
+      
+      # Connect to Azure Container Registry (ACR)
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }} 
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+      # Container build and push to a Azure Container Registry (ACR)
+    - run: |
+        docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:latest
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:latest
 
 
 
@@ -30,23 +87,8 @@ jobs:
 
 
 
-# # This workflow will build and push a node.js application to an Azure Web App when a release is created.
-# #
-# # This workflow assumes you have already created the target Azure App Service web app.
-# # For instructions see https://docs.microsoft.com/azure/app-service/app-service-plan-manage#create-an-app-service-plan
-# #
-# # To configure this workflow:
-# #
-# # 1. For Linux apps, add an app setting called WEBSITE_WEBDEPLOY_USE_SCM and set it to true in your app **before downloading the file**.
-# #      For more instructions see: https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings
-# #
-# # 2. Set up a secret in your repository named AZURE_WEBAPP_PUBLISH_PROFILE with the value of your Azure publish profile.
-# #    For instructions on obtaining the publish profile see: https://docs.microsoft.com/azure/app-service/deploy-github-actions#configure-the-github-secret
-# #
-# # 3. Change the values for the AZURE_WEBAPP_NAME, AZURE_WEBAPP_PACKAGE_PATH and NODE_VERSION environment variables  (below).
-# #
-# # For more information on GitHub Actions for Azure, refer to https://github.com/Azure/Actions
-# # For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
+
+#  ON RELEASE TO PROD
 # on:
 #   release:
 #     types: [created]
