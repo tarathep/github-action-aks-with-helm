@@ -5,10 +5,10 @@
 replicaCount: 1
 webappPort: 80
 image:
-  repository: crwebdemo.azurecr.io/azure-vote-front
+  repository: crwebdemo.azurecr.io/webapp
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v1"
+  tag: "latest"
 
 imagePullSecrets:
   - name: secret-docker-image
