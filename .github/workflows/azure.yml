@@ -15,63 +15,63 @@ env:
   APP_NAME: webapp
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   name: Build Artifact
-  #   # needs: unittest
+  build:
+    runs-on: ubuntu-latest
+    name: Build Artifact
+    # needs: unittest
 
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v2
-  #     with:
-  #       ref: main
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: main
 
-  #   - name: Set up Java version
-  #     uses: actions/setup-java@v1
-  #     with:
-  #       java-version: '11'
+    - name: Set up Java version
+      uses: actions/setup-java@v1
+      with:
+        java-version: '8'
 
-  #   - name: Build with Maven
-  #     run: mvn clean install
+    - name: Build with Maven
+      run: mvn clean install
 
-  #   - name: Upload artifact for deployment job
-  #     uses: actions/upload-artifact@v2
-  #     with:
-  #       name: artifact
-  #       path: '${{ github.workspace }}/target/*.jar'
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifact
+        path: '${{ github.workspace }}/target/*.jar'
 
-  # push:
-  #   runs-on: ubuntu-latest
-  #   name: Build & Push Image to ACR
-  #   needs: build
+  push:
+    runs-on: ubuntu-latest
+    name: Build & Push Image to ACR
+    needs: build
 
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v2
-  #     with:
-  #       ref: main
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: main
 
-  #   - name: Download Artifact
-  #     uses: actions/download-artifact@v2
-  #     with:
-  #       name: artifact
-  #       path: '${{ github.workspace }}/target'
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: artifact
+        path: '${{ github.workspace }}/target'
     
-  #   - name: Display structure of downloaded files
-  #     run: ls -R
-  #     working-directory: '${{ github.workspace }}/target'
+    - name: Display structure of downloaded files
+      run: ls -R
+      working-directory: '${{ github.workspace }}/target'
       
-  #     # Connect to Azure Container Registry (ACR)
-  #   - uses: azure/docker-login@v1
-  #     with:
-  #       login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
-  #       username: ${{ secrets.REGISTRY_USERNAME }} 
-  #       password: ${{ secrets.REGISTRY_PASSWORD }}
+      # Connect to Azure Container Registry (ACR)
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }} 
+        password: ${{ secrets.REGISTRY_PASSWORD }}
     
-  #     # Container build and push to a Azure Container Registry (ACR)
-  #   - run: |
-  #       docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:latest
-  #       docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:latest
+      # Container build and push to a Azure Container Registry (ACR)
+    - run: |
+        docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:latest
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -100,14 +100,6 @@ jobs:
       - name: Run Helm Deploy
         run: |
           helm upgrade --install prd helm/ --namespace demo-webapp-prd
-          # helm upgrade \
-          #   --install \
-          #   --create-namespace \
-          #   --atomic \
-          #   --wait \
-          #   --namespace staging \
-          #   demo-webapp-prd \
-          #   --set image.repository=${{ env.SECRET }}
 
 
 
