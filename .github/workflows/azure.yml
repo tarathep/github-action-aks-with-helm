@@ -99,14 +99,15 @@ jobs:
 
       - name: Run Helm Deploy
         run: |
-          helm upgrade \
-            --install \
-            --create-namespace \
-            --atomic \
-            --wait \
-            --namespace staging \
-            demo-webapp-prd \
-            --set image.repository=${{ env.SECRET }}
+          helm upgrade --install prd helm/ --namespace demo-webapp-prd
+          # helm upgrade \
+          #   --install \
+          #   --create-namespace \
+          #   --atomic \
+          #   --wait \
+          #   --namespace staging \
+          #   demo-webapp-prd \
+          #   --set image.repository=${{ env.SECRET }}
 
 
 
