@@ -3,15 +3,15 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
-webappPort: 80
+namespace: demo-webapp-prd
 image:
   repository: crwebdemo.azurecr.io/webapp
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
 imagePullSecrets:
-  - name: secret-docker-image
+  - name: secret-acr
   
 nameOverride: ""
 fullnameOverride: ""
