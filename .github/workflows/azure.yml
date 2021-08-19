@@ -1,16 +1,16 @@
-name: Build and deploy to AKS with Helm
+name: DEV-webapp to AKS with Helm
 
 on:
   push:
     branches:
-      - main
+      - dev
   workflow_dispatch:
 
 env:
   REGISTRY_NAME: crwebdemo
   CLUSTER_NAME: aks-demo-webapp
   CLUSTER_RESOURCE_GROUP: rg-github-action-001
-  NAMESPACE: demo-webapp-prd
+  NAMESPACE: demo-webapp-dev
   SECRET: secret-acr
   APP_NAME: webapp
 
@@ -24,7 +24,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        ref: main
+        ref: dev
 
     - name: Set up Java version
       uses: actions/setup-java@v1
@@ -42,14 +42,14 @@ jobs:
 
   push:
     runs-on: ubuntu-latest
-    name: Build & Push Image to ACR
+    name: Build Image
     needs: build
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        ref: main
+        ref: dev
 
     - name: Download Artifact
       uses: actions/download-artifact@v2
@@ -81,7 +81,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: main
+          ref: dev
 
       - name: Install Helm
         uses: Azure/setup-helm@v1
@@ -99,7 +99,7 @@ jobs:
 
       - name: Run Helm Deploy
         run: |
-          helm upgrade --install --create-namespace --atomic --wait --namespace demo-webapp-prd webapp helm/ --set image.name=crwebdemo.azurecr.io/webapp:${{ github.sha }}
+          helm upgrade --install --create-namespace --atomic --wait --namespace demo-webapp-dev webapp helm/ --set image.name=crwebdemo.azurecr.io/webapp:${{ github.sha }}
 
 
 
