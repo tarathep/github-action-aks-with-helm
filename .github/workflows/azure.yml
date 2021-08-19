@@ -70,8 +70,8 @@ jobs:
     
       # Container build and push to a Azure Container Registry (ACR)
     - run: |
-        docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:latest
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:latest
+        docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -99,16 +99,7 @@ jobs:
 
       - name: Run Helm Deploy
         run: |
-          # helm upgrade --install webapp helm/ --namespace demo-webapp-prd
-          helm upgrade --install --create-namespace --atomic --wait --namespace demo-webapp-prd webapp helm/
-
-# helm upgrade --install --create-namespace --atomic --wait --namespace staging webapp helm/ --set image.repository=${{ env. }} --set dns.name=${{ secrets.DNS_NAME }}
-
-
-
-
-
-
+          helm upgrade --install --create-namespace --atomic --wait --namespace demo-webapp-prd webapp helm/ --set image.name=crwebdemo.azurecr.io/webapp:${{ github.sha }}
 
 
 
