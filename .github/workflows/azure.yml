@@ -16,10 +16,9 @@ env:
   APP_NAME: webapp
 
 jobs:
-  build:
+  unittest:
     runs-on: ubuntu-latest
-    name: Build Artifact
-    # needs: unittest
+    name: Unit Test
 
     steps:
     - name: Checkout
@@ -33,7 +32,45 @@ jobs:
         java-version: '8'
 
     - name: Build with Maven
-      run: mvn clean install
+      run: mvn test
+
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v2
+      with:
+        name: UnitTest Reports
+        path: '${{ github.workspace }}/target/site/jacoco/*'
+  
+  codescan:
+    runs-on: ubuntu-latest
+    name: Static Code Scan
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: dev
+    # SKIPPP....
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build Artifact
+    needs: 
+      - unittest
+      - codescan
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: dev
+
+    - name: Set up Java version
+      uses: actions/setup-java@v1
+      with:
+        java-version: '8'
+
+    - name: Build with Maven
+      run: mvn clean install -DskipTests
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
