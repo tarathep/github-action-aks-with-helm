@@ -106,7 +106,7 @@ jobs:
           container-registry-url: ${{ env.CONTAINER_REGISTRY_URL }}
           container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
           container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-          secret-name: ${{ secrets.CONTAINER_REGISTRY_SECRET }}
+          secret-name: ${{ env.CONTAINER_REGISTRY_SECRET }}
         id: create-secret
 
       - name: Run Helm Deploy
