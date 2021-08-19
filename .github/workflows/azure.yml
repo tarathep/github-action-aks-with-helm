@@ -134,6 +134,8 @@ jobs:
           resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
           # AKS Cluster Name
           cluster-name: ${{ env.CLUSTER_NAME }}
+        - run: |
+            kubectl create namespace ${{ env.NAMESPACE }} --dry-run -o json | kubectl apply -f -
 
 
       - name: Set imagePullSecret
