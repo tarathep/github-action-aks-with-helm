@@ -11,7 +11,8 @@ env:
   CLUSTER_NAME: aks-demo-webapp
   CLUSTER_RESOURCE_GROUP: rg-github-action-001
   NAMESPACE: demo-webapp-dev
-  SECRET: secret-acr
+  CONTAINER_REGISTRY_URL: crwebdemo.azurecr.io
+  CONTAINER_REGISTRY_SECRET: secret-acr
   APP_NAME: webapp
 
 jobs:
@@ -97,9 +98,20 @@ jobs:
           # AKS Cluster Name
           cluster-name: ${{ env.CLUSTER_NAME }}
 
+
+      - name: Set imagePullSecret
+        uses: azure/k8s-create-secret@v1
+        with:
+          namespace: ${{ env.NAMESPACE }}
+          container-registry-url: ${{ env.CONTAINER_REGISTRY_URL }}
+          container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
+          container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+          secret-name: ${{ secrets.CONTAINER_REGISTRY_SECRET }}
+        id: create-secret
+
       - name: Run Helm Deploy
         run: |
-          helm upgrade --install --create-namespace --atomic --wait --namespace demo-webapp-dev webapp helm/ --set image.name=crwebdemo.azurecr.io/webapp:${{ github.sha }}
+          helm upgrade --install --create-namespace --atomic --wait --namespace ${{ env.NAMESPACE }} helm/ --set image.name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }} --set imagePullSecrets[0].name=${{ env.CONTAINER_REGISTRY_SECRET }}
 
 
 

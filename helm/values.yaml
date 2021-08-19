@@ -3,13 +3,13 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
-namespace: demo-webapp-prd
+
 image:
-  name: crwebdemo.azurecr.io/webapp:latest
+  name: image_name:tag
   pullPolicy: Always
 
 imagePullSecrets:
-  - name: secret-acr
+  - name: image_secret_name
   
 nameOverride: ""
 fullnameOverride: ""
