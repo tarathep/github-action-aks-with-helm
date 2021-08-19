@@ -111,10 +111,13 @@ jobs:
         docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
 
-  deploy:
+  deploy_dev:
     runs-on: ubuntu-latest
     needs: push
-    name: Deploy to DEV
+    name: Deploy to Dev
+    environment:
+      name: Development
+      url: 'http://40.119.238.59/hello'
 
     steps:
       - name: Checkout
