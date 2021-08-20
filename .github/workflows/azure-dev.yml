@@ -163,7 +163,7 @@ jobs:
   integrate_test:
     runs-on: ubuntu-latest
     name: Run Robot Framework Tests
-    needs: deploy_dev
+    # needs: deploy_dev
 
     steps:
     - name: Checkout
