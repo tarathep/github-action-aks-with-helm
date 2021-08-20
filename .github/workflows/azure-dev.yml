@@ -171,12 +171,16 @@ jobs:
       with:
         ref: dev
 
+    - name: Display structure of test files
+      run: ls -R
+      working-directory: '${{ github.workspace }}/tests/robot'
+
     - name: Robot Framework
       uses: joonvena/robotframework-docker-action@v1.0
       with:
-          browser: 'chrome'
-          robot_tests_dir: '${{ github.workspace }}/tests/robot/*'
-          robot_reports_dir: '${{ github.workspace }}/tests/robot/reports/'
+        browser: 'chrome'
+        robot_tests_dir: '${{ github.workspace }}/tests/robot/'
+        robot_reports_dir: '${{ github.workspace }}/tests/robot/reports/'
     
     - name: Upload Report Robot Test
       uses: actions/upload-artifact@v2
