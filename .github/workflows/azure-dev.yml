@@ -175,10 +175,11 @@ jobs:
       run: ls -R
       working-directory: '${{ github.workspace }}/tests/robot'
       
+    - name: XX
+      run: echo "github.workspace = ${{ github.workspace }}"
 
     - name: Robot Framework
       uses: joonvena/robotframework-docker-action@v1.0
-      run: echo "github.workspace = ${{ github.workspace }}"
       with:
         browser: 'chrome'
         ROBOT_TESTS_DIR: '${{ github.workspace }}/tests/robot'
