@@ -188,16 +188,16 @@ jobs:
     #     ROBOT_TESTS_DIR: '${{ github.workspace }}/tests/robot'
     #     # robot_reports_dir: '${{ github.workspace }}/tests/robot'
     - name: Robot Framework
-      uses: tarathep/robotframework-github-action@v0.1.3
+      uses: tarathep/robotframework-github-action@v0.1.4
       with:
-        robot_tests_dir: '${{ github.workspace }}/tests/robot'
-        robot_reports_dir: '${{ github.workspace }}/tests/robot'
+        tests_dir: '${{ github.workspace }}/tests/robot'
+        reports_dir: '${{ github.workspace }}/tests/robot/reports'
     
     - name: Upload Report Robot Test
       uses: actions/upload-artifact@v2
       with:
         name: Automate Test Reports
-        path: '${{ github.workspace }}/tests/robot/*'
+        path: '${{ github.workspace }}/tests/robot/reports/*'
 
 
   deploy_sit:
