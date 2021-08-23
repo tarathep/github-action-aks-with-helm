@@ -178,12 +178,17 @@ jobs:
     - name: XX
       run: echo "github.workspace = ${{ github.workspace }}"
 
+    # - name: Robot Framework
+    #   uses: joonvena/robotframework-docker-action@v1.0
+    #   with:
+    #     browser: 'chrome'
+    #     ROBOT_TESTS_DIR: '${{ github.workspace }}/tests/robot'
+    #     # robot_reports_dir: '${{ github.workspace }}/tests/robot'
     - name: Robot Framework
-      uses: joonvena/robotframework-docker-action@v1.0
+      uses: tarathep/robotframework-github-action@v0.1
       with:
-        browser: 'chrome'
-        ROBOT_TESTS_DIR: '${{ github.workspace }}/tests/robot'
-        # robot_reports_dir: '${{ github.workspace }}/tests/robot'
+        robot_tests_dir: '${{ github.workspace }}/tests/robot'
+        robot_reports_dir: '${{ github.workspace }}/tests/robot'
     
     - name: Upload Report Robot Test
       uses: actions/upload-artifact@v2
