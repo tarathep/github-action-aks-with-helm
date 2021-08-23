@@ -178,6 +178,9 @@ jobs:
     - name: XX
       run: echo "github.workspace = ${{ github.workspace }}"
 
+    - name: XX
+      run: chmod 777 ${{ github.workspace }}/tests/robot
+
     # - name: Robot Framework
     #   uses: joonvena/robotframework-docker-action@v1.0
     #   with:
