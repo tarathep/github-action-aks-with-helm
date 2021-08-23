@@ -185,7 +185,7 @@ jobs:
     #     ROBOT_TESTS_DIR: '${{ github.workspace }}/tests/robot'
     #     # robot_reports_dir: '${{ github.workspace }}/tests/robot'
     - name: Robot Framework
-      uses: tarathep/robotframework-github-action@v0.1.1
+      uses: tarathep/robotframework-github-action@v0.1.2
       with:
         robot_tests_dir: '${{ github.workspace }}/tests/robot'
         robot_reports_dir: '${{ github.workspace }}/tests/robot'
