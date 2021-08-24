@@ -13,15 +13,13 @@ jobs:
   deploy_sit:
     name: Deploy to SIT
     runs-on: ubuntu-latest
-    
     environment:
       name: SIT
       url: 'http://xxxx/hello'
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: master
-      - name: git tag SIT
-        run: echo hello git tag
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: master
+    - name: create tag
+      run: echo taging..
