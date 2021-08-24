@@ -187,7 +187,7 @@ jobs:
     
   deploy_sit:
     name: Deploy to SIT
-    if: github.event.ref == 'refs/heads/main'
+    # if: github.event.ref == 'refs/heads/main'
     needs: integrate_test
     runs-on: ubuntu-latest
     
