@@ -2,8 +2,12 @@ name: SIT Pipeline
 
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - master
+  pull_request: 
+    branches:
+      - master
+  workflow_dispatch:
 
 # 
 jobs:
@@ -20,3 +24,5 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: master
+      - name: git tag SIT
+        run: echo hello git tag
