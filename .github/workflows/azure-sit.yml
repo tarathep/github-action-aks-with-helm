@@ -1,11 +1,11 @@
 name: SIT Pipeline
 
-on:
-  # pull_request:
-  #   types: [closed]
+on:    
   push:
-    branches:
-      - master
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 
 # 
