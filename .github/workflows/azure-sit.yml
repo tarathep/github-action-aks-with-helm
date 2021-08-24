@@ -6,8 +6,8 @@ on:
       - '*'
 
 # 
-
-deploy_sit:
+jobs:
+  deploy_sit:
     name: Deploy to SIT
     runs-on: ubuntu-latest
     
