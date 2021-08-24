@@ -1,0 +1,22 @@
+name: STG Pipeline
+
+on:
+  push:
+    tags:
+      - '*-stg'
+
+# 
+jobs:
+  deploy_sit:
+    name: Deploy to STG
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: STG
+      url: 'http://xxxx/hello'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
