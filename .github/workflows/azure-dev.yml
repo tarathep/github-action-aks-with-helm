@@ -173,25 +173,8 @@ jobs:
       with:
         ref: dev
 
-    - name: Display structure of test files
-      run: ls -R
-      working-directory: '${{ github.workspace }}/tests/robot'
-      
-    - name: XX
-      run: echo "github.workspace = ${{ github.workspace }}"
-
-    - name: XX
-      run: chmod 777 ${{ github.workspace }}/tests/robot
-
-    # - name: Robot Framework
-    #   uses: joonvena/robotframework-docker-action@v1.0
-    #   with:
-    #     browser: 'chrome'
-    #     robot_tests_dir: '/tests/robot'
-        # robot_reports_dir: '/tests/robot'
-
-    - name: Robot Framework
-      uses: tarathep/robotframework-github-action@v0.1.6
+    - name: Robot Framework Action
+      uses: tarathep/robotframework-github-action@v.0.1.7
       with:
         tests_dir: '${{ github.workspace }}/tests/robot'
         reports_dir: '${{ github.workspace }}/tests/robot/reports'
