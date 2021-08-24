@@ -1,10 +1,8 @@
 name: SIT Pipeline
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - master
+  # pull_request:
+  #   types: [closed]
   push:
     branches:
       - master
