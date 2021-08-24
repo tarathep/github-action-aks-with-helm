@@ -1,0 +1,22 @@
+name: SIT Pipeline
+
+on:
+  push:
+    tags:
+      - '*'
+
+# 
+
+deploy_sit:
+    name: Deploy to SIT
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: SIT
+      url: 'http://xxxx/hello'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master

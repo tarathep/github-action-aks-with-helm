@@ -1,4 +1,4 @@
-name: PRD Pipeline
+name: DEV Pipeline
 
 on:
   push:
