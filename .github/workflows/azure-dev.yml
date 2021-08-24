@@ -123,7 +123,7 @@ jobs:
     # needs: push
     name: Deploy to Dev
     environment:
-      name: Development
+      name: DEV
       url: 'http://40.119.238.59/hello'
 
     steps:
@@ -164,7 +164,7 @@ jobs:
 
   integrate_test:
     runs-on: ubuntu-latest
-    name: Run Robot Framework Tests
+    name: Integrate Test with Robot Framework
     needs: deploy_dev
 
     steps:
