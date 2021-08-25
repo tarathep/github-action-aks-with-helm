@@ -17,21 +17,25 @@ jobs:
       name: SIT
       url: 'http://xxxx/hello'
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        ref: main
-    
-    - name: echo debug
+    - name: Set env
+      run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+    - name: Test
+      run: echo $GITHUB_SHA_SHORT
+
+    - name: debug var
       run: |
-        echo ::set-output name=VERSION::$(git describe --tags --abbrev=0)
-        echo ${{ steps.get_version.outputs.VERSION }}
+        MY_VAR=$(git describe --tags --abbrev=0)
+        echo "::add-mask::$MY_VAR"
+
 
     - uses: actions/github-script@v4
       name: make tag name
+      env:
+          ENV_VAR: $MY_VAR
       with:
         script: |
-          console.log('hello')
+          const { ENV_VAR } = process.env
+          console.log(`hello ${ENV_VAR}`)
 
 
     - name: create tag
