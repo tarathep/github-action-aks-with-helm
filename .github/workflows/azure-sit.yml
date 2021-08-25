@@ -9,7 +9,7 @@ env:
   REGISTRY_NAME: crwebdemo
   CLUSTER_NAME: aks-demo-webapp
   CLUSTER_RESOURCE_GROUP: rg-github-action-001
-  NAMESPACE: demo-webapp-dev
+  NAMESPACE: demo-webapp-sit
   CONTAINER_REGISTRY_URL: crwebdemo.azurecr.io
   CONTAINER_REGISTRY_SECRET: secret-acr
   APP_NAME: webapp
@@ -72,7 +72,69 @@ jobs:
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit
 
     
+  deploy_sit:
+    runs-on: ubuntu-latest
+    needs: push
+    name: Deploy to SIT
+    environment:
+      name: SIT
+      url: 'http://40.119.238.59/hello'
 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Helm
+        uses: Azure/setup-helm@v1
+        with:
+          version: v3.3.1
+
+      - name: Get AKS Credentials
+        uses: Azure/aks-set-context@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
+          cluster-name: ${{ env.CLUSTER_NAME }}
+      - run: |
+          kubectl create namespace ${{ env.NAMESPACE }} --dry-run -o json | kubectl apply -f -
+
+
+      - name: Set imagePullSecret
+        uses: azure/k8s-create-secret@v1
+        with:
+          namespace: ${{ env.NAMESPACE }}
+          container-registry-url: ${{ env.CONTAINER_REGISTRY_URL }}
+          container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
+          container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+          secret-name: ${{ env.CONTAINER_REGISTRY_SECRET }}
+        id: create-secret
+
+      - name: Run Helm Deploy
+        run: |
+          helm upgrade --install --create-namespace --atomic --wait --namespace ${{ env.NAMESPACE }} ${{ env.APP_NAME }} helm/ --set image.name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${GITHUB_REF#refs/*/}-sit --set imagePullSecrets[0].name=${{ env.CONTAINER_REGISTRY_SECRET }}
+
+  # e2e_test:
+  #   runs-on: ubuntu-latest
+  #   name: E2E with Robot Framework
+  #   needs: deploy_sit
+
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
+  #     with:
+  #       ref: dev
+
+  #   - name: Robot Framework Action
+  #     uses: tarathep/robotframework-github-action@v1.0
+  #     with:
+  #       tests_dir: '${{ github.workspace }}/tests/robot'
+  #       reports_dir: '${{ github.workspace }}/tests/robot/reports'
+    
+  #   - name: Upload Report Robot Test
+  #     uses: actions/upload-artifact@v2
+  #     with:
+  #       name: Automate Test Reports
+  #       path: '${{ github.workspace }}/tests/robot/reports/*'
     
   
 
