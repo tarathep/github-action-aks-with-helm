@@ -24,6 +24,10 @@ jobs:
     
     - uses: actions/github-script@v4
       name: make tag name
+      run: |
+        echo ::set-output name=VERSION::$(git describe --tags --abbrev=0)
+        echo ${{ steps.get_version.outputs.VERSION }}
+      
       with:
         script: |
           console.log('hello')
