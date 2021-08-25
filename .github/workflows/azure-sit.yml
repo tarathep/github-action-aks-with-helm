@@ -1,11 +1,8 @@
 name: SIT Pipeline
-
 on:
   push:
     tags:
       - 'v*'
-
-# 
 jobs:
   tagging:
     name: Tagging
