@@ -162,28 +162,41 @@ jobs:
       #   run: |
       #     helm upgrade --install --create-namespace --atomic --wait --namespace ${{ env.NAMESPACE }} ${{ env.APP_NAME }} helm/ --set image.name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }} --set imagePullSecrets[0].name=${{ env.CONTAINER_REGISTRY_SECRET }}
 
-  integrate_test:
+  debug:
     runs-on: ubuntu-latest
-    name: Integrate Test with Robot Framework
+    name: debuging
     needs: deploy_dev
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        ref: dev
+    - name: Debug ECHO
+      run: |
+          echo ${GITHUB_REF#refs/*/}
+          echo ${GITHUB_REF#refs/heads/}
+          echo ${GITHUB_REF#refs/tags/}
+          echo ${{ github.ref }}
 
-    - name: Robot Framework Action
-      uses: tarathep/robotframework-github-action@v1.0
-      with:
-        tests_dir: '${{ github.workspace }}/tests/robot'
-        reports_dir: '${{ github.workspace }}/tests/robot/reports'
+  # integrate_test:
+  #   runs-on: ubuntu-latest
+  #   name: Integrate Test with Robot Framework
+  #   needs: deploy_dev
+
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
+  #     with:
+  #       ref: dev
+
+  #   - name: Robot Framework Action
+  #     uses: tarathep/robotframework-github-action@v1.0
+  #     with:
+  #       tests_dir: '${{ github.workspace }}/tests/robot'
+  #       reports_dir: '${{ github.workspace }}/tests/robot/reports'
     
-    - name: Upload Report Robot Test
-      uses: actions/upload-artifact@v2
-      with:
-        name: Automate Test Reports
-        path: '${{ github.workspace }}/tests/robot/reports/*'
+  #   - name: Upload Report Robot Test
+  #     uses: actions/upload-artifact@v2
+  #     with:
+  #       name: Automate Test Reports
+  #       path: '${{ github.workspace }}/tests/robot/reports/*'
     
   # deploy_sit:
   #   name: Deploy to SIT
