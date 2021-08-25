@@ -21,6 +21,14 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: main
+    
+    - uses: actions/github-script@v4
+      name: make tag name
+      with:
+        script: |
+          console.log('hello')
+
+
     - name: create tag
       run: |
         git tag 0.1.4
