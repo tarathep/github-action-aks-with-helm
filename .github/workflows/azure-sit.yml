@@ -1,31 +1,88 @@
 name: SIT Pipeline
 
-on:    
+on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
-
+    tags:
+      - 'v*'
 
 # 
 jobs:
+  tagging:
+    name: Tagging
+    runs-on: ubuntu-latest
+  
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      
+      - name: Test
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ env.RELEASE_VERSION }}
+
   deploy_sit:
     name: Deploy to SIT
     runs-on: ubuntu-latest
+    
     environment:
       name: SIT
       url: 'http://xxxx/hello'
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        ref: main
-    - name: TAG
-      run: GIT_TAG=$(git describe --tags --abbrev=0)
 
-    - name: ECHO
-      run: echo $GIT_TAG
+      
+        
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# name: SIT Pipeline
+
+# on:    
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
+#   workflow_dispatch:
+
+
+# # 
+# jobs:
+#   deploy_sit:
+#     name: Deploy to SIT
+#     runs-on: ubuntu-latest
+#     environment:
+#       name: SIT
+#       url: 'http://xxxx/hello'
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v2
+#       with:
+#         ref: main
+#     - name: TAG
+#       run: GIT_TAG=$(git describe --tags --abbrev=0)
+
+#     - name: ECHO
+#       run: echo $GIT_TAG
 
     # - uses: actions/github-script@v4
     #   name: make tag name
