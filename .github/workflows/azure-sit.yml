@@ -1,25 +1,120 @@
 name: SIT Pipeline
 
-on:    
+on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    tags:
+      - 'v*'
 
+env:
+  REGISTRY_NAME: crwebdemo
+  CLUSTER_NAME: aks-demo-webapp
+  CLUSTER_RESOURCE_GROUP: rg-github-action-001
+  NAMESPACE: demo-webapp-dev
+  CONTAINER_REGISTRY_URL: crwebdemo.azurecr.io
+  CONTAINER_REGISTRY_SECRET: secret-acr
+  APP_NAME: webapp
 
-# 
 jobs:
-  tagging:
-    name: Tagging
+  build:
     runs-on: ubuntu-latest
-  
+    name: Build Artifact
+
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Java version
+      uses: actions/setup-java@v1
+      with:
+        java-version: '8'
+
+    - name: Build with Maven
+      run: mvn clean install -DskipTests
     
-    - name: Test
-      run: |
-        git describe --tags --abbrev=0
+    - name: Set RELEASE_VERSION
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifact-${{ RELEASE_VERSION }}
+        path: '${{ github.workspace }}/target/*.jar'
+
+  # Push:
+  #   runs-on: ubuntu-latest
+  #   name: Build Image
+  #   needs: build
+
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
+  #     with:
+  #       ref: dev
+
+  #   - name: Download Artifact
+  #     uses: actions/download-artifact@v2
+  #     with:
+  #       name: artifact
+  #       path: '${{ github.workspace }}/target'
+    
+  #   - name: Display structure of downloaded files
+  #     run: ls -R
+  #     working-directory: '${{ github.workspace }}/target'
+      
+  #     # Connect to Azure Container Registry (ACR)
+  #   - uses: azure/docker-login@v1
+  #     with:
+  #       login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+  #       username: ${{ secrets.REGISTRY_USERNAME }} 
+  #       password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+  #     # Container build and push to a Azure Container Registry (ACR)
+  #   - run: |
+  #       docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+  #       docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+
+    
+
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ------------- BACKUP -----------
+
+# name: SIT Pipeline
+
+# on:    
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
+#   workflow_dispatch:
+
+
+# # 
+# jobs:
+#   tagging:
+#     name: Tagging
+#     runs-on: ubuntu-latest
+  
+#     steps:
+#     - uses: actions/checkout@v2
+    
+#     - name: Test
+#       run: |
+#         git describe --tags --abbrev=0
 
 
 
