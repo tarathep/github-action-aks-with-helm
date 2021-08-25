@@ -17,13 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: set tag ver to var
-      run: RELEASE_VERSION=$(git describe --tags --abbrev=0)
-    
     - name: Test
       run: |
-        echo $RELEASE_VERSION
-        echo ${{ env.RELEASE_VERSION }}
+        git describe --tags --abbrev=0
 
 
 
