@@ -22,10 +22,10 @@ jobs:
       with:
         ref: main
     - name: TAG
-      run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV
+      run: "GIT_TAG=$(git describe --tags --abbrev=0)"
 
     - name: ECHO
-      run: echo $GITHUB_ENV
+      run: echo $GIT_TAG
 
     # - uses: actions/github-script@v4
     #   name: make tag name
