@@ -19,17 +19,17 @@ jobs:
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
 
-  deploy_sit:
-    name: Deploy to SIT
-    runs-on: ubuntu-latest
-    
-    environment:
-      name: SIT
-      url: 'http://xxxx/hello'
+    # deploy_sit:
+    #   name: Deploy to SIT
+    #   runs-on: ubuntu-latest
+      
+    #   environment:
+    #     name: SIT
+    #     url: 'http://xxxx/hello'
 
-      steps:
-        - name: check
-          run: echo check
+    #     steps:
+    #       - name: check
+    #         run: echo check
 
       
         
