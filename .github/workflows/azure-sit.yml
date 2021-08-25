@@ -37,7 +37,7 @@ jobs:
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
       with:
-        name: artifact-${{ RELEASE_VERSION }}
+        name: artifact-${{ env.RELEASE_VERSION }}
         path: '${{ github.workspace }}/target/*.jar'
 
   # Push:
