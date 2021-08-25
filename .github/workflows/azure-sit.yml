@@ -22,7 +22,7 @@ jobs:
       with:
         ref: main
     - name: TAG
-      run: "GIT_TAG=$(git describe --tags --abbrev=0)"
+      run: GIT_TAG=$(git describe --tags --abbrev=0)
 
     - name: ECHO
       run: echo $GIT_TAG
