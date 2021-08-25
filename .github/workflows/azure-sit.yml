@@ -30,6 +30,10 @@ jobs:
       name: SIT
       url: 'http://xxxx/hello'
 
+      steps:
+        - name: check
+          run: echo check
+
       
         
     
