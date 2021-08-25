@@ -22,4 +22,12 @@ jobs:
       with:
         ref: main
     - name: create tag
-      run: git status
+      run: |
+        git tag 0.1.4
+        git push origin --tags 0.1.4
+
+    - name: echo ref
+      run: echo ${{ github.ref }}
+
+
+
