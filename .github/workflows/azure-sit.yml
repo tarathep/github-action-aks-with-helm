@@ -27,23 +27,23 @@ jobs:
     - name: ECHO
       run: echo $GITHUB_ENV
 
-    - uses: actions/github-script@v4
-      name: make tag name
-      env:
-          ENV_VAR: $MY_VAR
-      with:
-        script: |
-          const { ENV_VAR } = process.env
-          console.log(`hello ${ENV_VAR}`)
+    # - uses: actions/github-script@v4
+    #   name: make tag name
+    #   env:
+    #       ENV_VAR: $MY_VAR
+    #   with:
+    #     script: |
+    #       const { ENV_VAR } = process.env
+    #       console.log(`hello ${ENV_VAR}`)
 
 
-    - name: create tag
-      run: |
-        git tag 0.1.4
-        git push origin --tags 0.1.4
+    # - name: create tag
+    #   run: |
+    #     git tag 0.1.4
+    #     git push origin --tags 0.1.4
 
-    - name: echo ref
-      run: echo ${{ github.ref }}
+    # - name: echo ref
+    #   run: echo ${{ github.ref }}
 
 
 
