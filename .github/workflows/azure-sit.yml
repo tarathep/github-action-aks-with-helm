@@ -40,38 +40,36 @@ jobs:
         name: artifact-${{ env.RELEASE_VERSION }}
         path: '${{ github.workspace }}/target/*.jar'
 
-  # Push:
-  #   runs-on: ubuntu-latest
-  #   name: Build Image
-  #   needs: build
+  push:
+    runs-on: ubuntu-latest
+    name: Build Image
+    needs: build
 
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v2
-  #     with:
-  #       ref: dev
+    steps:
+    # Want Dockerfile
+    - name: Checkout
+      uses: actions/checkout@v2
 
-  #   - name: Download Artifact
-  #     uses: actions/download-artifact@v2
-  #     with:
-  #       name: artifact
-  #       path: '${{ github.workspace }}/target'
-    
-  #   - name: Display structure of downloaded files
-  #     run: ls -R
-  #     working-directory: '${{ github.workspace }}/target'
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: artifact
+        path: '${{ github.workspace }}/target'
       
-  #     # Connect to Azure Container Registry (ACR)
-  #   - uses: azure/docker-login@v1
-  #     with:
-  #       login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
-  #       username: ${{ secrets.REGISTRY_USERNAME }} 
-  #       password: ${{ secrets.REGISTRY_PASSWORD }}
+      # Connect to Azure Container Registry (ACR)
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }} 
+        password: ${{ secrets.REGISTRY_PASSWORD }}
     
-  #     # Container build and push to a Azure Container Registry (ACR)
-  #   - run: |
-  #       docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
-  #       docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
+    - name: Set RELEASE_VERSION
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    
+      # Container build and push to a Azure Container Registry (ACR)
+    - run: |
+        docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit
 
     
 
