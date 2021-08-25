@@ -53,7 +53,7 @@ jobs:
     - name: Download Artifact
       uses: actions/download-artifact@v2
       with:
-        name: artifact
+        name: artifact-${{ env.RELEASE_VERSION }}
         path: '${{ github.workspace }}/target'
       
       # Connect to Azure Container Registry (ACR)
