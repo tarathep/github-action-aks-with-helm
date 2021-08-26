@@ -103,25 +103,29 @@ jobs:
 
     steps:
     # REQUIRED LOAD DOCKER FILE
-    - uses: actions/checkout@v2
+    - name: Load Dockerfile
+      uses: actions/checkout@v2
       with:
         ref: dev
 
     # DOWNLOAD ARTIFACT
-    - uses: actions/download-artifact@v2
+    - name: Load Artifact
+      uses: actions/download-artifact@v2
       with:
         name: artifact
         path: '${{ github.workspace }}/target'
       
     # CONNECT TO AZURE CONTAINER REGISTRY
-    - uses: azure/docker-login@v1
+    - name: Connect to Azure Container Registry
+      uses: azure/docker-login@v1
       with:
         login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }} 
         password: ${{ secrets.REGISTRY_PASSWORD }}
     
       # DOCKER BUILD & PUSH TO AZURE CONTAINER REGISTRY
-    - run: |
+    - name: Build image & Push to Azure Container Registry
+      run: |
         docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
 
@@ -135,18 +139,19 @@ jobs:
 
     steps:
       # LOAD HELM CONFIG FOR DEPLOY
-      - uses: actions/checkout@v2
+      - name: Load Helm configuration files
+        uses: actions/checkout@v2
         with:
           ref: dev
       
       # INSTALL HELM ON GITHUB HOST
-      - name: INSTALL HELM ON GITHUB HOST
+      - name: Install Helm on GitHub host
         uses: Azure/setup-helm@v1
         with:
           version: v3.3.1
 
       # LOGIN AKS WITH CREDENTAIL
-      - name: LOGIN AKS WITH CREDENTAIL
+      - name: Login Azure Kubernates
         uses: Azure/aks-set-context@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -154,10 +159,12 @@ jobs:
           cluster-name: ${{ env.CLUSTER_NAME }}
 
       # CREATE NAMESPACE IF NOT EXIST
+      - name: Create namespace on AKS
       - run: |
           kubectl create namespace ${{ env.NAMESPACE }} --dry-run -o json | kubectl apply -f -
       
       # CREATE IMAGE ACR SECRET IF NOT EXIST
+      - name: Create Image ACR Secret If not exist
       - uses: azure/k8s-create-secret@v1
         with:
           namespace: ${{ env.NAMESPACE }}
@@ -168,7 +175,7 @@ jobs:
         id: create-secret
       
       # HELM DEPLOY OR UPGRADE TO AKS
-      - name: HELM DEPLOY OR UPGRADE TO AKS
+      - name: Helm Deploy and Upgrade to AKS
         run: |
           helm upgrade \
           --install \
@@ -187,19 +194,19 @@ jobs:
     needs: deploy_dev
 
     steps:
-    - name: CHECKOUT SOURCE CODE
+    - name: Checkout Source Code
       uses: actions/checkout@v2
       with:
         ref: dev
 
     # EXECUTE PRODUCT TEST WITH ROBOT FRAMEWORK ACTION
-    - name: EXECUTE PRODUCT TEST WITH ROBOT FRAMEWORK ACTION
+    - name: Robot Framework Action
       uses: tarathep/robotframework-github-action@v1.0
       with:
         tests_dir: '${{ github.workspace }}/tests/robot'
         reports_dir: '${{ github.workspace }}/tests/robot/reports'
     # UPLOAD REPORTS
-    - name: UPLOAD REPORTS
+    - name: Upload Reports
       uses: actions/upload-artifact@v2
       with:
         name: Product Test Reports

@@ -15,12 +15,24 @@ env:
   APP_NAME: webapp
 
 jobs:
-  build:
+  provision:
     runs-on: ubuntu-latest
-    name: Build Artifact
+    name: Provisioning Infra & Configuration
 
     steps:
-    - run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    # CHECKOUT CONFIGUTAION FILES
+    - name: Load Configuration Files
+      uses: actions/checkout@v2
+
+  build:
+    runs-on: ubuntu-latest
+    name: ReBuild Artifact
+    needs: 
+      - provision
+
+    steps:
+    - name: TAG Release Version
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
     - name: Checkout
       uses: actions/checkout@v2
       with:
@@ -40,6 +52,7 @@ jobs:
       with:
         name: artifact-${{ env.RELEASE_VERSION }}
         path: '${{ github.workspace }}/target/*.jar'
+  
 
   push:
     runs-on: ubuntu-latest
@@ -47,26 +60,34 @@ jobs:
     needs: build
 
     steps:
-    - run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-    - uses: actions/checkout@v2
+    # TAG Release Version
+    - name: TAG Release Version
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+    # REQUIRED LOAD DOCKER FILE
+    - name: Load Dockerfile
+      uses: actions/checkout@v2
       with:
         ref: ${{ env.RELEASE_VERSION }}
 
-    - name: Download Artifact
+    # DOWNLOAD ARTIFACT
+    - name: Load Artifact
       uses: actions/download-artifact@v2
       with:
         name: artifact-${{ env.RELEASE_VERSION }}
         path: '${{ github.workspace }}/target'
       
-      # Connect to Azure Container Registry (ACR)
-    - uses: azure/docker-login@v1
+    # CONNECT TO AZURE CONTAINER REGISTRY
+    - name: Connect to Azure Container Registry
+      uses: azure/docker-login@v1
       with:
         login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }} 
         password: ${{ secrets.REGISTRY_PASSWORD }}
     
-      # Container build and push to a Azure Container Registry (ACR)
-    - run: |
+    # DOCKER BUILD & PUSH TO AZURE CONTAINER REGISTRY
+    - name: Build image & Push to Azure Container Registry
+      run: |
         docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit
 
@@ -80,29 +101,38 @@ jobs:
       url: http://20.195.33.238/hello
 
     steps:
-    # CURRENTLY CHECKOUT TAG
-    - run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-    - uses: actions/checkout@v2
+    # TAG Release Version
+    - name: TAG Release Version
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    
+    # LOAD HELM CONFIG FOR DEPLOY
+    - name: Load Helm configuration files
+      uses: actions/checkout@v2
       with:
         ref: ${{ env.RELEASE_VERSION }}
 
-    - name: Install Helm
+    # INSTALL HELM ON GITHUB HOST
+    - name: Install Helm on GitHub host
       uses: Azure/setup-helm@v1
       with:
         version: v3.3.1
 
-    - name: Get AKS Credentials
+    # LOGIN AKS WITH CREDENTAIL
+    - name: Login Azure Kubernates
       uses: Azure/aks-set-context@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
         cluster-name: ${{ env.CLUSTER_NAME }}
+
+    # CREATE NAMESPACE IF NOT EXIST
+    - name: Create namespace on AKS
     - run: |
         kubectl create namespace ${{ env.NAMESPACE }} --dry-run -o json | kubectl apply -f -
-
-    # IMAGRE SECRET IN AKS NAMESPACE
-    - name: Set imagePullSecret
-      uses: azure/k8s-create-secret@v1
+    
+    # CREATE IMAGE ACR SECRET IF NOT EXIST
+    - name: Create Image ACR Secret If not exist
+    - uses: azure/k8s-create-secret@v1
       with:
         namespace: ${{ env.NAMESPACE }}
         container-registry-url: ${{ env.CONTAINER_REGISTRY_URL }}
@@ -110,8 +140,9 @@ jobs:
         container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
         secret-name: ${{ env.CONTAINER_REGISTRY_SECRET }}
       id: create-secret
-
-    - name: Run Helm Deploy
+    
+    # HELM DEPLOY OR UPGRADE TO AKS
+    - name: Helm Deploy and Upgrade to AKS
       run: |
         helm upgrade \
         --install \
@@ -130,11 +161,13 @@ jobs:
     needs: deploy_sit
 
     steps:
-    # GET RELEASE VERSION
-    - run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    # TAG Release Version
+    - name: TAG Release Version
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
     # CHECKOUT
-    - uses: actions/checkout@v2
+    - name: Checkout Source Code
+      uses: actions/checkout@v2
       with:
         ref: ${{ env.RELEASE_VERSION }}
 
@@ -144,30 +177,11 @@ jobs:
       with:
         tests_dir: '${{ github.workspace }}/tests/robot'
         reports_dir: '${{ github.workspace }}/tests/robot/reports'
-    # UPLOAD REPORT
-    - uses: actions/upload-artifact@v2
+
+    # UPLOAD REPORTS
+    - name: Upload Reports
+      uses: actions/upload-artifact@v2
       with:
-        name: Automate Test Reports
+        name: E2E Test Reports
         path: '${{ github.workspace }}/tests/robot/reports/*'
-
-
-
-
-
-
-
-
-
-
-# ------------- BACKUP -----------
-
-# name: SIT Pipeline
-
-# on:    
-#   push:
-#     branches: [ main ]
-#   pull_request:
-#     branches: [ main ]
-#   workflow_dispatch:
-
 
