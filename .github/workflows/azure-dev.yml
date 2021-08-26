@@ -20,7 +20,7 @@ env:
 
 jobs:
   provision:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     name: Provisioning Infra & Configuration
 
     steps:
