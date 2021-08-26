@@ -90,8 +90,11 @@ jobs:
         java-version: '8'
     
     # BUILD ONLY NOT TEST & UPLOAD RESULT
-    - run: mvn clean install -DskipTests
-    - uses: actions/upload-artifact@v2
+    - name: Build Artifact
+      run: mvn clean install -DskipTests
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
       with:
         name: artifact
         path: '${{ github.workspace }}/target/*.jar'
@@ -160,12 +163,12 @@ jobs:
 
       # CREATE NAMESPACE IF NOT EXIST
       - name: Create namespace on AKS
-      - run: |
+        run: |
           kubectl create namespace ${{ env.NAMESPACE }} --dry-run -o json | kubectl apply -f -
       
       # CREATE IMAGE ACR SECRET IF NOT EXIST
       - name: Create Image ACR Secret If not exist
-      - uses: azure/k8s-create-secret@v1
+        uses: azure/k8s-create-secret@v1
         with:
           namespace: ${{ env.NAMESPACE }}
           container-registry-url: ${{ env.CONTAINER_REGISTRY_URL }}
