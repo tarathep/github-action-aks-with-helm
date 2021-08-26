@@ -14,8 +14,6 @@ env:
   CONTAINER_REGISTRY_SECRET: secret-acr
   APP_NAME: webapp
   RELEASE_VERSION: ${GITHUB_REF#refs/*/}
-  ENV_NAME: SIT
-  ENV_URL: http://20.195.33.238/hello
 
 jobs:
   build:
@@ -79,10 +77,10 @@ jobs:
   deploy_sit:
     runs-on: ubuntu-latest
     needs: push
-    name: Deploy to ${{ env.ENV_NAME }}
+    name: Deploy to SIT
     environment:
-      name: ${{ env.ENV_NAME }}
-      url: ${{ env.ENV_URL }}
+      name: SIT
+      url: http://20.195.33.238/hello
 
     steps:
       - name: Checkout
