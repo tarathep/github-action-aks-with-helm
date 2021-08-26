@@ -13,7 +13,6 @@ env:
   CONTAINER_REGISTRY_URL: crwebdemo.azurecr.io
   CONTAINER_REGISTRY_SECRET: secret-acr
   APP_NAME: webapp
-  RELEASE_VERSION: ${GITHUB_REF#refs/*/}
 
 jobs:
   build:
@@ -24,7 +23,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        ref: ${{ env.RELEASE_VERSION }}
+        ref: ${GITHUB_REF#refs/*/}
 
     #----- CUSTOM DEPENDING ON FRAMEWORK -------
     - name: Set up Java version
@@ -41,7 +40,7 @@ jobs:
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
       with:
-        name: artifact-${{ env.RELEASE_VERSION }}
+        name: artifact-${GITHUB_REF#refs/*/}
         path: '${{ github.workspace }}/target/*.jar'
 
   push:
@@ -53,12 +52,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        ref: ${{ env.RELEASE_VERSION }}
+        ref: ${GITHUB_REF#refs/*/}
 
     - name: Download Artifact
       uses: actions/download-artifact@v2
       with:
-        name: artifact-${{ env.RELEASE_VERSION }}
+        name: artifact-${GITHUB_REF#refs/*/}
         path: '${{ github.workspace }}/target'
       
       # Connect to Azure Container Registry (ACR)
@@ -70,8 +69,8 @@ jobs:
     
       # Container build and push to a Azure Container Registry (ACR)
     - run: |
-        docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit
+        docker build . -t ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${GITHUB_REF#refs/*/}-sit
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${GITHUB_REF#refs/*/}-sit
 
     
   deploy_sit:
@@ -86,7 +85,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{ env.RELEASE_VERSION }}
+          ref: ${GITHUB_REF#refs/*/}
 
       - name: Install Helm
         uses: Azure/setup-helm@v1
@@ -135,7 +134,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        ref: ${{ env.RELEASE_VERSION }}
+        ref: ${GITHUB_REF#refs/*/}
 
     - name: Robot Framework Action
       uses: tarathep/robotframework-github-action@v1.0
@@ -248,7 +247,7 @@ jobs:
 #       - name: Test
 #         run: |
 #           echo $RELEASE_VERSION
-#           echo ${{ env.RELEASE_VERSION }}
+#           echo ${GITHUB_REF#refs/*/}
 #           echo ${GITHUB_REF#refs/*/}
 
     # deploy_sit:
