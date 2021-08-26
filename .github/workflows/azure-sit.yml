@@ -22,7 +22,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      ref: v0.1
+      with:
+        ref: v0.1
 
     - name: Set up Java version
       uses: actions/setup-java@v1
@@ -50,7 +51,8 @@ jobs:
     # Want Dockerfile
     - name: Checkout
       uses: actions/checkout@v2
-      ref: v0.1
+      with:
+        ref: v0.1
     
     - name: Set RELEASE_VERSION
       run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -85,6 +87,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
         ref: v0.1
 
       - name: Install Helm
@@ -125,7 +128,8 @@ jobs:
     # checkout tag
     - name: Checkout
       uses: actions/checkout@v2
-      ref: v0.1
+      with:
+        ref: v0.1
 
     - name: Robot Framework Action
       uses: tarathep/robotframework-github-action@v1.0
