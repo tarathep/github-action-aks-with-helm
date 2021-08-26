@@ -28,8 +28,7 @@ jobs:
   push:
     runs-on: ubuntu-latest
     name: Build Image
-    needs: build
-
+    
     steps:   
     # CONNECT TO AZURE CONTAINER REGISTRY
     - name: Connect to Azure Container Registry
