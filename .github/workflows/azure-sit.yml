@@ -20,10 +20,13 @@ jobs:
     name: Build Artifact
 
     steps:
+    - name: Set RELEASE_VERSION
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        ref: ${GITHUB_REF#refs/*/}
+        ref: ${{ env.RELEASE_VERSION }}
 
     #----- CUSTOM DEPENDING ON FRAMEWORK -------
     - name: Set up Java version
@@ -33,9 +36,6 @@ jobs:
 
     - name: Build with Maven
       run: mvn clean install -DskipTests
-    
-    # - name: Set RELEASE_VERSION
-    #   run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
@@ -125,6 +125,8 @@ jobs:
           --set image.name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${GITHUB_REF#refs/*/}-sit \
           --set imagePullSecrets[0].name=${{ env.CONTAINER_REGISTRY_SECRET }}
 
+
+
   e2e_test:
     runs-on: ubuntu-latest
     name: E2E with Robot Framework
@@ -147,11 +149,6 @@ jobs:
       with:
         name: Automate Test Reports
         path: '${{ github.workspace }}/tests/robot/reports/*'
-    
-  
-
-
-
 
 
 
