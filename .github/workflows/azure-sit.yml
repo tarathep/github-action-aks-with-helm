@@ -22,6 +22,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+      ref: v0.1
 
     - name: Set up Java version
       uses: actions/setup-java@v1
@@ -49,6 +50,7 @@ jobs:
     # Want Dockerfile
     - name: Checkout
       uses: actions/checkout@v2
+      ref: v0.1
     
     - name: Set RELEASE_VERSION
       run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -78,11 +80,12 @@ jobs:
     name: Deploy to SIT
     environment:
       name: SIT
-      url: 'http://40.119.238.59/hello'
+      url: 'http://20.195.33.238/hello'
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        ref: v0.1
 
       - name: Install Helm
         uses: Azure/setup-helm@v1
@@ -113,28 +116,28 @@ jobs:
         run: |
           helm upgrade --install --create-namespace --atomic --wait --namespace ${{ env.NAMESPACE }} ${{ env.APP_NAME }} helm/ --set image.name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${GITHUB_REF#refs/*/}-sit --set imagePullSecrets[0].name=${{ env.CONTAINER_REGISTRY_SECRET }}
 
-  # e2e_test:
-  #   runs-on: ubuntu-latest
-  #   name: E2E with Robot Framework
-  #   needs: deploy_sit
+  e2e_test:
+    runs-on: ubuntu-latest
+    name: E2E with Robot Framework
+    needs: deploy_sit
 
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v2
-  #     with:
-  #       ref: dev
+    steps:
+    # checkout tag
+    - name: Checkout
+      uses: actions/checkout@v2
+      ref: v0.1
 
-  #   - name: Robot Framework Action
-  #     uses: tarathep/robotframework-github-action@v1.0
-  #     with:
-  #       tests_dir: '${{ github.workspace }}/tests/robot'
-  #       reports_dir: '${{ github.workspace }}/tests/robot/reports'
+    - name: Robot Framework Action
+      uses: tarathep/robotframework-github-action@v1.0
+      with:
+        tests_dir: '${{ github.workspace }}/tests/robot'
+        reports_dir: '${{ github.workspace }}/tests/robot/reports'
     
-  #   - name: Upload Report Robot Test
-  #     uses: actions/upload-artifact@v2
-  #     with:
-  #       name: Automate Test Reports
-  #       path: '${{ github.workspace }}/tests/robot/reports/*'
+    - name: Upload Report Robot Test
+      uses: actions/upload-artifact@v2
+      with:
+        name: Automate Test Reports
+        path: '${{ github.workspace }}/tests/robot/reports/*'
     
   
 
