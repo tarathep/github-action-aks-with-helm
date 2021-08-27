@@ -18,6 +18,8 @@ jobs:
   provision:
     runs-on: ubuntu-latest
     name: Provisioning Infra & Configuration
+    environment:
+      name: STG
 
     steps:
     # CHECKOUT CONFIGUTAION FILES
