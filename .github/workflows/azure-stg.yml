@@ -23,7 +23,7 @@ jobs:
     - run: echo ${{needs.job1.outputs.output1}}
   
   
-  job2:
+  job3:
     runs-on: ubuntu-latest
     steps:
     - run: echo ${{ env.REGISTRY_NAME }}
