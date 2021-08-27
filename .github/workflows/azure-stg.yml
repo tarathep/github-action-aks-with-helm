@@ -19,9 +19,14 @@ jobs:
 
   job2:
     runs-on: ubuntu-latest
-    needs: job1
     steps:
     - run: echo ${{needs.job1.outputs.output1}}
+  
+  
+  job2:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo ${{ env.REGISTRY_NAME }}
 
   # provision:
   #   runs-on: ubuntu-latest

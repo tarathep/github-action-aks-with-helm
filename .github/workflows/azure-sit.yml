@@ -19,7 +19,6 @@ env:
   CONTAINER_REGISTRY_URL: crwebdemo.azurecr.io
   CONTAINER_REGISTRY_SECRET: secret-acr
   APP_NAME: webapp
-  RELEASE_VERSION:
 
 jobs:
   job1:
