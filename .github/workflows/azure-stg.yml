@@ -20,7 +20,7 @@ jobs:
   job2:
     runs-on: ubuntu-latest
     steps:
-    - run: echo ${{needs.job1.outputs.output1}}
+    - run: echo ${{ env.GITHUB_REF_SLUG }}
   
   
   job3:
