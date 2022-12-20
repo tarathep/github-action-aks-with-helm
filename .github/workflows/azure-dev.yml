@@ -13,7 +13,7 @@ env:
   REGISTRY_NAME: myacr0218
   CLUSTER_NAME: aks-staging
   CLUSTER_RESOURCE_GROUP: rg-staging-eastus
-  NAMESPACE: default
+  NAMESPACE: webapp-demo
   CONTAINER_REGISTRY_URL: myacr0218.azurecr.io
   CONTAINER_REGISTRY_SECRET: secret-acr
   APP_NAME: webapp
