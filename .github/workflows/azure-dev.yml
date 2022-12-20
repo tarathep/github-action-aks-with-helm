@@ -20,7 +20,7 @@ env:
 
 jobs:
   provision:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Provisioning Infra & Configuration
 
     steps:
@@ -31,7 +31,7 @@ jobs:
         ref: dev
 
   unittest:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Unit Test
 
     steps:
@@ -60,7 +60,7 @@ jobs:
 
 
   codescan:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Static Code Scan
 
     steps:
@@ -71,7 +71,7 @@ jobs:
 
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Build Artifact
     needs: 
       - provision
@@ -100,7 +100,7 @@ jobs:
         path: '${{ github.workspace }}/target/*.jar'
 
   push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Build Image
     needs: build
 
@@ -133,7 +133,7 @@ jobs:
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
 
   deploy_dev:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: push
     name: Deloy to DEV
     environment:
@@ -192,7 +192,7 @@ jobs:
           --set imagePullSecrets[0].name=${{ env.CONTAINER_REGISTRY_SECRET }}
 
 #  integrate_test:
-#    runs-on: ubuntu-latest
+#    runs-on: self-hosted
 #    name: Product Test with Robot Framework
 #    needs: deploy_dev
 #
