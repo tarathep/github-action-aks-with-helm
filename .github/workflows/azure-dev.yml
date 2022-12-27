@@ -20,7 +20,7 @@ env:
 
 jobs:
   provision:
-    runs-on: self-hosted
+    runs-on: self-hosted,linux
     name: Provisioning Infra & Configuration
 
     steps:
@@ -31,7 +31,7 @@ jobs:
         ref: dev
 
   unittest:
-    runs-on: self-hosted
+    runs-on: self-hosted,linux
     name: Unit Test
 
     steps:
@@ -60,7 +60,7 @@ jobs:
 
 
   codescan:
-    runs-on: self-hosted
+    runs-on: self-hosted,linux
     name: Static Code Scan
 
     steps:
@@ -71,7 +71,7 @@ jobs:
 
 
   build:
-    runs-on: self-hosted
+    runs-on: self-hosted,linux
     name: Build Artifact
     needs: 
       - provision
@@ -100,7 +100,7 @@ jobs:
         path: '${{ github.workspace }}/target/*.jar'
 
   push:
-    runs-on: self-hosted
+    runs-on: self-hosted,linux
     name: Build Image
     needs: build
 
@@ -133,7 +133,7 @@ jobs:
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
 
   deploy_dev:
-    runs-on: self-hosted
+    runs-on: self-hosted,linux
     needs: push
     name: Deloy to DEV
     environment:
