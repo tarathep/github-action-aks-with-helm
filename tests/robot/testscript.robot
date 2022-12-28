@@ -5,4 +5,4 @@ Library               RequestsLibrary
 
 Quick Get A JSON Body Test
     ${response}=    GET  https://mywebtest007.azurewebsites.net/
-    Should Contain Match  ${response.text}  regexp=Todo List
+    Should Contain  ${response.text}  Todo List
