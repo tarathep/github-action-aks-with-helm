@@ -4,5 +4,5 @@ Library               RequestsLibrary
 *** Test Cases ***
 
 Quick Get A JSON Body Test
-    ${response}=    GET  http://webapp.webapp-demo/hello
-    Should Be Equal As Strings    ${response.text}  Hello Demo Github Action 5
+    ${response}=    GET  https://mywebtest007.azurewebsites.net/
+    Should Be Equal As Strings    ${response.text}  Todo List
