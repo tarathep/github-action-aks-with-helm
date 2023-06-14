@@ -60,7 +60,7 @@ jobs:
     name: Deploy to STG
     environment:
       name: STG
-      url: http://20.195.33.238/hello
+      url: http://demo1.apps.cloudinfraz.com/hello
 
     steps:
     # TAG Release Version
