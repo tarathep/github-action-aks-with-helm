@@ -50,9 +50,8 @@ jobs:
     # DOCKER BUILD & PUSH TO AZURE CONTAINER REGISTRY
     - name: Image Pull & Push Tag to Azure Container Registry
       run: |
-        docker pull ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-stg
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-stg
+        docker pull ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:stg
+       
 
   deploy_stg:
     if: ${{ github.event.pull_request.merged }}
@@ -115,7 +114,7 @@ jobs:
         --namespace \
         ${{ env.NAMESPACE }} \
         ${{ env.APP_NAME }} helm/ \
-        --set image.name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-stg \
+        --set image.name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:stg \
         --set imagePullSecrets[0].name=${{ env.CONTAINER_REGISTRY_SECRET }}
   
   security_scan:
