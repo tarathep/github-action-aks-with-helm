@@ -1,21 +1,24 @@
 name: STG Pipeline
 
 on:
-  push:
-    tags:
-      - 'v*'
+  pull_request:
+    branches: 
+      - main
+    types: [closed]
 
 env:
-  REGISTRY_NAME: crwebdemo
-  CLUSTER_NAME: aks-demo-webapp
-  CLUSTER_RESOURCE_GROUP: rg-github-action-001
-  NAMESPACE: demo-webapp-stg
-  CONTAINER_REGISTRY_URL: crwebdemo.azurecr.io
+  REGISTRY_NAME: myacr0218
+  CLUSTER_NAME: aks-staging
+  CLUSTER_RESOURCE_GROUP: rg-staging-eastus
+  NAMESPACE: default
+  CONTAINER_REGISTRY_URL: myacr0218.azurecr.io
   CONTAINER_REGISTRY_SECRET: secret-acr
   APP_NAME: webapp
 
 jobs:
+  
   provision:
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     name: Provisioning Infra & Configuration
     environment:
@@ -47,17 +50,17 @@ jobs:
     # DOCKER BUILD & PUSH TO AZURE CONTAINER REGISTRY
     - name: Image Pull & Push Tag to Azure Container Registry
       run: |
-        docker pull ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-sit ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-stg
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-stg
+        docker pull ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:stg
+       
 
   deploy_stg:
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     needs: image_tag
     name: Deploy to STG
     environment:
       name: STG
-      url: http://20.195.33.238/hello
+      url: http://demo1.apps.cloudinfraz.com/hello
 
     steps:
     # TAG Release Version
@@ -111,10 +114,11 @@ jobs:
         --namespace \
         ${{ env.NAMESPACE }} \
         ${{ env.APP_NAME }} helm/ \
-        --set image.name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ env.RELEASE_VERSION }}-stg \
+        --set image.name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:stg \
         --set imagePullSecrets[0].name=${{ env.CONTAINER_REGISTRY_SECRET }}
   
   security_scan:
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     needs: deploy_stg
     name: Security Scan
